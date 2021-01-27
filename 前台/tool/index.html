@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .bol{
+            position: absolute;
+            top: -500px;
+            left: -500px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: red;
+            transform: translate(-50%,-50%);
+        }
+    </style>
+    <script>
+        /*
+        * Copyright (c) 2015-2015 windowToCanvas contributors.
+        * Copyright (c) 2011-2014 Adam Rudd.
+        *
+        * See LICENSE for more information
+        */
+        ;function windowToCanvas(BGpzuXPX1,g2,suQNw3){if(!BGpzuXPX1){return{g2:0,suQNw3:0}}var jgcjlyMpo4=BGpzuXPX1['\x67\x65\x74\x42\x6f\x75\x6e\x64\x69\x6e\x67\x43\x6c\x69\x65\x6e\x74\x52\x65\x63\x74']();return{x:g2-jgcjlyMpo4['\x6c\x65\x66\x74']*(BGpzuXPX1['\x77\x69\x64\x74\x68']/jgcjlyMpo4['\x77\x69\x64\x74\x68']),y:suQNw3-jgcjlyMpo4['\x74\x6f\x70']*(BGpzuXPX1['\x68\x65\x69\x67\x68\x74']/jgcjlyMpo4['\x68\x65\x69\x67\x68\x74'])}};
+    </script>
+</head>
+<body>
+    <div style="position: relative;">
+        <img id="canvas" src="./91.jpg" style="width: 1000px;height: 600px;" alt="">
+        <p>
+            <button onclick="document.querySelector('#box').innerHTML=''">清空</button>
+        </p>
+        <div >[ <span id='box'></span> ]</div>
+        <div class='bol'></div>
+    </div>
+</body>
+</html>
+<script>
+    document.body.onload=function(){
+        document.querySelector('#canvas').addEventListener('mousedown',function(e){
+                var  mousexy=windowToCanvas(canvas,e.clientX,e.clientY);
+                // console.log(mousexy);
+                document.querySelector('.bol').style.top = mousexy.y+'px';
+                document.querySelector('.bol').style.left = mousexy.x+'px';
+                if(document.querySelector('#box').innerHTML.length){
+                    document.querySelector('#box').innerHTML+=`,${JSON.stringify(mousexy)}`
+                }else{
+                    document.querySelector('#box').innerHTML+=`${JSON.stringify(mousexy)}`
+                }
+            
+        })
+    };
+</script>

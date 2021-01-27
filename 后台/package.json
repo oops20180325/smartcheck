@@ -1,0 +1,62 @@
+{
+  "name": "changqing",
+  "version": "0.1.0",
+  "lalala": "内部变量",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "serve_u": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "core-js": "^3.3.2",
+    "echarts": "^4.4.0",
+    "echarts-liquidfill": "^2.0.5",
+    "element-ui": "^2.13.1",
+    "js-cookie": "^2.2.1",
+    "v-viewer": "^1.4.2",
+    "vue": "^2.6.10",
+    "vue-router": "^3.1.3",
+    "vue-vd": "^0.1.1",
+    "vuedraggable": "^2.23.2",
+    "vuex": "^3.0.1",
+    "xlsx": "^0.15.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-plugin-eslint": "^4.0.0",
+    "@vue/cli-plugin-router": "^4.0.0",
+    "@vue/cli-plugin-vuex": "^4.0.0",
+    "@vue/cli-service": "^4.0.0",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "sass": "^1.19.0",
+    "sass-loader": "^8.0.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}

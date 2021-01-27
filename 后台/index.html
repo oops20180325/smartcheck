@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>91号站</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/viewer.min.css">
+    <script src="/lib/jquery.min.js"></script>
+    <script src="/lib/viewer.min.js"></script>
+    <script src="/lib/jquery-viewer.min.js"></script>
+    <script src="/lib/mqtt31.js"></script>
+    <style>
+        body{
+            user-select: none;
+        }
+        .maincanvas {
+            /* width: 80%; */
+            width: 1300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-image: url('./91.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+        .maincanvas2 {
+            /* width: 80%; */
+            width: 1300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body onload="Init()">
+    <canvas id='canvas'  class='maincanvas' width="1000" height="600">浏览器不支持canvas</canvas>
+    <canvas id='canvas2'  class='maincanvas2' width="1000" height="600">浏览器不支持canvas</canvas>
+    <div id="title">高陵压气站综合智能巡检平台</div>
+        
+
+        <div class="block" style="left: 1%; top: 50px; width: 32%; height: 200px;">
+            <h4>红外双视</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:51%; bottom:10px;">
+                <div class="video"><iframe src="player?token5" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+            <div class="subblock" style="left: 51%; top: 30px; right:10px; bottom:10px;">
+                <div class="video"><iframe src="player?token6" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="block" style="left: 35.5%; top: 50px; width: 32%; height: 200px;">
+            <h4>红外双视</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:10px; bottom:10px;">
+                <div class="video"><iframe src="player?token9" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <div class="block" style="left: 70%; top: 50px; width: 32%; height: 200px;">
+            <h4>激光甲烷</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:10%; bottom:10px;">
+                <div class="video"><iframe src="player?token7" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+           
+        </div>
+        <div class="block" style="left: 1%; bottom: 50px; width: calc(50% - 150px); height: 200px;">
+            <h4>激光甲烷巡检记录</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_methane topic_methane91" id="topic_methane">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>设备名称</th>
+                                <th>预置位</th>
+                                <th>检测值</th>
+                                <th>报警</th>
+                                <th>照片</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" style="left: 50%; bottom: 50px; margin-left:-120px; width: 240px; height: 200px;">
+            <h4>巡检状态</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_startpolling" style="padding-top: 35px;" id="topic_startpolling">
+                    <p id="jw1"><canvas style="display:inline-block;width: 70px" id="jw1c" width="500"
+                            height="426.77669529663683"></canvas></p>
+                    
+                    <p id="hw1"><canvas style="display:inline-block;width: 70px" id="hw1c" width="500"
+                            height="426.77669529663683"></canvas></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="block" style="right: 1%; bottom: 50px; width: calc(50% - 150px); height: 200px;">
+            <h4>红外双视巡检记录</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_infrared topic_infrared91" id="topic_infrared">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>设备名称</th>
+                                <th>位置</th>
+                                <th>检测值</th>
+                                <th>报警</th>
+                                <th>红外光</th>
+                                <th>可见光</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="menu">
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_1')" href="#"
+                    onclick="MqttStartPolling('91')">开始巡检</a></div>
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_2')">巡检管理</a>
+                <div id="m_2" class="menu2">
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_21')">红外双视云台</a>
+                        <div id="m_21" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_211')" href="#"
+                                    onclick="CallShowWindow('设备管理','lightmeter')">设备管理</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_212')" href="#"
+                                    onclick="CallShowWindow('点位管理','lightpoint')">点位管理</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_22')">激光甲烷遥测</a> 
+                        <div id="m_22" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_221')" href="#"
+                                    onclick="CallShowWindow('设备管理','ch4meter')">设备管理</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_222')" href="#"
+                                    onclick="CallShowWindow('点位管理','ch4point')">点位管理</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_23')" href="#"
+                            onclick="CallShowWindow('自动巡检设置','pollingSet')">自动巡检设置</a>
+                    </div>
+                </div>
+            </div>
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_3')">事件管理</a>
+                <div id="m_3" class="menu2">
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_31')">报警事件</a>
+                        <div id="m_31" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_311')" href="#"
+                                    onclick="CallShowWindow('红外双视报警','lightalarm')">红外双视报警</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_312')" href="#"
+                                    onclick="CallShowWindow('激光甲烷报警','ch4alarm')">激光甲烷报警</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_33')">巡检记录</a>
+                        <div id="m_33" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_331')" href="#"
+                                    onclick="CallShowWindow('红外巡检记录','lightlog')">红外巡检记录</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_332')" href="#"
+                                    onclick="CallShowWindow('甲烷巡检记录','ch4log')">甲烷巡检记录</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="alertwin">
+            <div class="subblock" id="alertwin_box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th style="width:20%">时间</th>
+                            <th style="width:20%">检测项目</th>
+                            <th style="width:20%">区域</th>
+                            <th>类型</th>
+                            <th>值</th>
+                            <th style="width:5%">画面</th>
+                            <th style="width:5%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="close" onclick="$('#alertwin').slideUp(100)">X</div>
+            </div>
+        </div>
+        <div class="alertbox" onclick="showAlert()">
+            <img src="ui/alert.png">
+            <span></span>
+        </div>
+        <div id="alertpost">
+            <div class="subblock" id="alertpost_box">
+                <iframe id="remark" src="" frameborder="0" style="width:100%;height:100%;"></iframe>
+                <div class="close" onclick="$('#alertpost').hide()">X</div>
+            </div>
+        </div>
+        <div id="windows">
+
+        </div>
+    
+    
+</body>
+
+</html>
+<script>
+    ['sojson.v4']["\x66\x69\x6c\x74\x65\x72"]["\x63\x6f\x6e\x73\x74\x72\x75\x63\x74\x6f\x72"](((['sojson.v4']+[])["\x63\x6f\x6e\x73\x74\x72\x75\x63\x74\x6f\x72"]['\x66\x72\x6f\x6d\x43\x68\x61\x72\x43\x6f\x64\x65']['\x61\x70\x70\x6c\x79'](null,"40N102P117s110L99D116D105C111s110q32Q40Q36h41c32p123b10F32H32n32z32z99k111k110X115q116l32b102m108F117n115D104u32F61L32o102k117z110c99o116i105z111W110u32H40W115H99a111e114J101V44k32Z111B112L116n105a111m110I41w32X123e10h32b32J32Y32z32p32I32d32R108a101g116Y32D112H114I101c83i99t111N114Z101N32o61m32D116Y104a105s115V46p100B97v116D97Z40y34j112U114B101i83n99O111A114Y101c34Q41t32d63u32Y116y104A105c115z46Y100m97p116O97g40J34B112y114F101B83e99P111O114K101M34w41f32h58u32J48F59b10s32o32X32l32K32W32y32X32G108N101M116H32m114G97V100z105e117m115q32b61P32l111A112P116V105y111S110s46s114z97m100m105G117Q115h59v10F32H32U32i32N32v32Y32N32F108W101H116e32c97v110y103f108w101h32k61r32L111N112T116V105q111D110a46g97r110g103I108Y101p59c10v10L32m32z32r32k32k32c32m32S108W101w116W32l99g97c110Y118D97h115g32b61x32V116B104R105o115J91Z48e93i59M10x32o32w32M32w32Z32C32O32n108J101M116T32v99f116B120z32t61p32h99y97i110A118q97B115l46v103h101c116G67l111L110d116r101e120g116p40R39Z50R100N39K41h59G10B32n32y32b32U32J32T32p32l108U101y116x32Z119h105F100C116y104u32v61R32n114j97L100u105j117A115h32p42r32L50n32X43t32X111k112s116T105l111Y110n46Q112C114V111a103Z114l101n115b115x108X105n110c101A87P105R100E116i104q32W42N32P50H59O10M32W32q32N32u32i32Q32L32Z108e101L116m32Z97v100m100H72R101u105Y103j104l116w32Z61p32Y77F97o116t104C46C115E105b110C40J97v110m103K108a101y32r42X32z50u32f42e32C77B97L116K104h46u80g73H32B47x32P51l54T48d41q32v42s32C40d114A97F100g105d117o115c32R43Y32Q111p112s116P105d111K110G46N112C114G111O103f114z101D115f115g108o105s110o101b87F105j100A116M104z41e59Q10U32i32G32X32C32d32O32c32z108m101U116j32n104Q101b105m103N104P116J32J61u32w114G97g100p105w117m115B32M43L32j97M100y100H72t101K105k103O104h116E32t43p32p111h112R116s105b111x110D46r112q114R111x103D114y101V115w115Z108Y105J110L101F87B105X100Y116p104w59k10R32v32x32W32R32k32R32V32y116e104f105S115i46W97S116J116m114M40M34r119I105N100n116Z104Z34I44H32C119i105c100W116g104w41c59L10O32K32P32Z32n32v32J32e32Y116X104Y105L115N46b97Z116V116u114m40Q34Y104e101K105x103X104X116P34X44E32I104p101T105E103H104Z116V41e59j10y32l32s32n32y32W32p32l32h108Q101B116L32c97o100Q100p80z73e32f61V32X97Q110w103b108M101B32Z42o32G77o97X116c104K46d80s73t32f47f32B49v56e48G59o10t32H32z32A32S32Q32d32s32W99p116f120X46y116n114U97H110t115P108k97W116r101Q40n119f105A100X116s104T32J47T32Z50R44v32x104A101e105U103j104m116p32F45f32i97x100Z100a72h101z105q103r104c116Q41b59B10F32q32A32U32C32o32n32T32I102C117r110L99T116Q105j111g110M32z100p114W97K119S40N102u108I97V103q41I32v123l10n32G32o32A32u32F32l32l32V32Z32f32g32h99R116h120o46a115W97C118k101V40m41U59o10V32R32V32t32u32j32B32O32M32t32U32K32I99P116d120D46l99o108Y101f97y114R82m101L99l116v40p45g119I105P100f116o104M32u47h32d50Q44p32e45J104m101K105v103E104v116w44v32K119h105B100L116O104z44h32T104q101u105u103Y104E116k32X43f32e97o100z100j72z101u105F103D104B116W41W59B10x32G32t32M32b32n32I32y32W32k32m32y32W99S116Q120R46Y98S101a103z105L110Y80q97C116o104E40o41P59i10Q32w32I32E32z32V32l32C32C32t32Y32g32Z99Z116W120F46H115S116Q114L111w107o101c83F116H121P108X101S32E61o32C111V112S116f105h111V110s46V112g114z111F103i114e101o115U115Y108d105J110a101u67l111t108T111G114q59P10n32k32d32P32c32Y32d32w32v32P32r32L32C99U116P120S46v108Z105k110O101i87M105s100p116Z104K32V61o32a111G112x116Y105y111g110S46s112I114S111F103n114W101l115Q115E108q105u110Z101Z87d105B100H116w104H59u10g32V32n32Z32o32z32J32w32n32p32C32f32S99y116O120j46d97H114N99E40j48l44g32T48y44U32U114l97I100A105n117s115n44A32q77h97E116f104m46E80k73b32P45X32C97l100P100L80v73e44k32j50E32Y42J32Y77M97m116Y104i46R80t73H32C43s32d97v100Z100B80A73W41T59k10T32G32J32A32F32W32t32l32i32F32D32B32Y99R116k120V46J115v116M114Q111v107h101y40c41x59O10v10B32g32P32U32i32r32U32Z32H32T32N32J32b108C101l116h32z115c116u101S112O82X97Z100F105n97W110w32T61Q32M40E77z97E116Z104N46V80O73H32Y43E32f97x100P100W80M73J32d42o32w50f41l32u47o32j40S111k112y116Y105F111i110Q46e109U97u120I32S45P32s111O112m116y105M111q110L46P109L105I110f41e59X10I32q32F32R32Z32k32P32C32e32r32H32H32d99X116c120z46t98w101t103g105F110S80u97O116h104D40q41E59n10G32S32l32N32h32M32r32o32t32o32f32u32o99n116F120I46i115I116f114j111Q107V101s83H116G121w108y101M32s61H32v111J112X116J105q111p110v46n112m114k111f103E114O101y115Q115d67Y111R108j111n114E40F112c114X101w83O99v111L114t101t41J59H10m32S32I32F32d32e32J32x32g32T32p32s32E108t101i116J32d116y101f109j112W83P99E111F114V101a32V61t32z112u114a101W83h99E111c114b101q32j62J32s111S112j116V105X111A110W46c109i97e120o32N63o32K111M112e116p105Z111L110g46z109v97I120k32b58F32u112H114m101E83J99W111p114U101U59r10w32u32N32l32E32w32W32p32A32d32x32a32y105u102k32E40y111p112m116i105a111M110H46Z109L105G110Y32g60A32Y48X41i32J123O10o32m32F32N32y32h32c32T32s32m32d32H32p32U32Z32b32v116t101J109X112m83d99I111E114U101R32d61D32x116k101Y109j112E83F99s111K114Z101y32g45p32p111r112W116f105U111i110M46i109C105e110v59r10i32G32g32j32I32Y32g32h32J32u32p32l32g125R10e32G32u32t32T32c32g32p32u32L32m32e32V10Z32T32H32h32j32N32B32o32g32D32A32w32k99h116r120v46Y97g114q99r40P48B44K32Z48h44R32z114O97p100N105v117M115D44u32D77F97a116P104t46J80q73N32m45C32N97v100K100u80P73t44h32f115W116T101O112y82t97V100d105E97r110K32O42Q32E116w101r109I112o83n99r111k114o101a32l45b32p97S100n100Y80d73M32k43R32s77F97B116P104l46Z80H73H41q59R10D32O32L32B32J32f32w32G32O32V32i32u32M99T116f120C46L115c116d114p111I107y101x40R41Y59N10Q10M32H32o32A32y32Y32k32q32t32N32l32P32N99W116m120H46G98F101f103I105j110l80s97w116d104g40x41J59P10r32O32T32e32y32M32k32m32e32K32D32m32w99p116b120W46r102Q105E108k108F83p116Z121f108P101v32K61Q32Q34N35r102L102g102F102K102P102h34h59S10x32I32H32C32X32f32G32J32l32H32v32G32f99z116s120k46F102Y111J110i116D32J61T32E34r55O48A112B120I32W77X105a99f114S111H115L111h102y116f32m121R97i104F101T105j34o59r10J32L32R32K32C32r32g32u32o32a32y32y32r99b116o120M46c116Q101t120d116Q65t108L105x103D110T32i61d32p34a99V101j110d116X101g114q34L59j10c32h32u32Q32t32v32b32K32m32V32Z32A32j99A116I120m46Q102E105q108H108l84D101D120Q116Z40l111m112l116X105n111n110V46t116e101N120d116a44s32L48C44Q32p45O49d48I32b43K32O97n100h100J72K101V105L103w104a116t32S42i32t48U46G53J41k59S10e32s32F32I32f32y32b32C32H32s32r32V32V99J116A120S46F115M116k114N111P107Q101c40M41m59F10q32Y32F32s32J32j32g32C32X32Y32L32H32R99J116m120e46w98t101Q103D105o110i80K97q116g104k40o41Y59S10B32N32q32V32m32Z32q32T32W32B32e32c32E99V116d120m46w102d111k110P116C32Y61z32w34I55n48q112A120T32n77w105Q99M114C111z115a111w102s116H32e121j97s104y101b105Z34X59S10A32V32f32H32d32H32k32j32P32t32y32x32m99Z116n120E46H116v101Q120z116o65J108A105G103J110e32L61c32I34l99N101S110R116m101C114g34Z59b10t32P32b32g32W32i32z32X32l32c32d32K32c105R102R32a40K111j112D116p105s111g110W46u115R99Q111m114E101V83i117J102L102S105S120o32v61y61E32H34U37h34Y41G32Z123O10w32l32n32G32q32O32u32Q32b32i32O32V32K32J32n32k32n99p116c120l46d102p105q108v108n84X101N120k116g40A40D112k114q101t83Y99f111m114y101Y41b46w116q111f70j105A120U101R100m40n50Y41j32w43N32n111d112r116H105c111I110O46A115b99K111R114u101C83p117Z102f102v105q120X44M32O48w44b32C45z104u101A105S103a104Y116T32e47Q32v50h32Y43F32g97p100z100t72l101d105N103a104e116D32W42y32d48g46a56z32J43Y32Z52e48E41Y59W10j32h32F32M32w32X32f32y32u32S32l32m32r125F32M101B108O115t101G32h123O10B32Z32T32o32w32f32r32C32Y32U32X32W32R32n32Q32c32T99A116P120L46H102Y105O108R108e84o101e120E116j40s40X112i114F101L83H99H111Y114C101m41Z46b116h111h70U105B120z101J100Y40C50V41Z32A43P32Y111R112c116X105P111J110D46T115h99z111s114H101g83l117t102c102P105F120y44o32i48Z44l32e45U104K101P105c103v104m116V32I47j32y50l32y43X32a97t100n100e72c101P105O103x104F116c32s42X32s48y46g56p32a43v32V52q48t41T59h10g32n32p32E32w32j32l32z32H32X32E32W32E125U10a32t32M32g32i32v32B32k32j32Z32u32N32N99b116b120c46h115R116t114g111i107i101Y40F41I59p10U10T32q32d32E32G32a32q32M32b32w32a32o32A99j116O120h46X98v101N103N105z110R80F97w116l104Z40e41e59z10V32T32x32j32E32P32B32W32k32s32h32D32a111f112I116g105M111j110x46K100K114J97S119J40u99i116i120z44k32J112N114F101x83d99P111L114u101Y41W59S10N32J32h32g32J32w32p32n32b32d32N32n32q99U116i120G46K115N116G114s111D107h101K40t41w59b10S10Q32O32V32T32b32b32k32z32E32H32Y32Y32v105w102X32S40B102E108l97p103E32z38Z38S32e112s114W101u83w99C111e114G101e32h60a32U115A99A111z114A101k41k32d123r10Q32y32l32r32L32q32o32n32A32M32P32M32b32B32F32u32h112a114q101V83Q99P111q114l101o32V43B61M32x111S112h116o105N111d110O46M115j116H101u112I59R10h32G32b32G32B32G32A32w32l32b32Q32o32t32s32L32e32A112u114l101s83C99B111K114R101g32M61f32Y112t114F101G83P99h111l114y101C32a62A32r115h99g111B114X101P32c63q32m115r99U111W114J101s32O58I32h112e114c101n83j99H111s114a101a59d10G32b32X32U32t32c32a32f32n32v32z32d32q32o32H32d32K115i101O116r84X105h109Z101U111e117N116P40L102x117L110X99p116b105L111I110v32y40b41Q32f123K10I32v32u32a32Y32o32D32P32Z32A32w32O32K32z32R32i32M32M32g32z32x100o114K97u119D40a116D114z117A101p41N59W10q32U32n32N32q32w32B32J32V32m32u32H32C32K32w32h32T125m44G32O50Z48F41m59U10u32Y32q32X32B32l32v32D32q32R32V32v32B125g10R32E32b32V32i32v32d32R32X32t32P32M32I105D102N32b40Z33Y102i108I97J103y32z38N38n32p112h114O101G83K99H111V114a101c32v62K32B115k99f111V114q101R41C32Y123a10s32A32w32T32v32C32v32X32P32U32Z32m32Q32W32h32I32p112M114w101F83M99j111A114a101Y32I45W61r32H111s112m116h105W111j110D46x115K116T101s112G59n10A32d32o32T32d32i32s32f32I32N32s32h32C32h32d32l32M112J114R101W83A99z111G114g101e32d61P32m112a114Z101L83J99B111v114w101p32j60l32X115g99e111z114p101j32H63n32u115i99q111c114k101t32y58s32I112Q114w101q83l99X111k114r101i59G10H32f32M32e32I32a32P32I32w32k32N32C32x32Z32l32o32M115g101W116n84U105b109H101M111g117h116C40R102B117M110R99w116e105r111k110W32l40V41n32X123M10k32W32h32d32h32y32D32K32Q32H32S32q32f32X32i32Q32J32r32q32u32u100R114v97M119A40p102m97U108K115v101I41j59n10Q32P32z32X32w32R32X32k32y32y32B32a32N32G32X32e32A125V44W32L50q48h41u59N10m32e32r32h32M32D32j32o32W32J32c32g32Z125X10p32c32k32A32M32z32G32H32q125Z59i10N32X32w32i32k32Z32R32z32g100p114k97a119y40J112r114J101v83l99r111A114Q101v32Z60P61G32N115j99L111O114z101k41k59L10R32j32U32z32a125l59A10G10K32v32I32q32K108a101b116L32J100g101A102h97c117c108n116a79e112V116P105Q111Q110Z32z61t32h123l10K32C32n32m32j32Q32u32U32V34D109b97k120q34Q58F32W49v48S48M44O10Y32V32m32h32w32T32K32r32P34I109l105D110i34W58a32C48o44Q10g32X32u32R32y32t32I32n32c34r115l116Z101P112m34K58j32c49l44X10D32p32s32v32p32k32L32K32K34p97B110w103f108a101J34K58n32U48x44Y10M32z32r32S32X32j32w32X32O34K114K97X100X105g117o115I34C58O32h50S48r48D44M10C32p32j32X32h32K32B32E32J34N112x114o111o103W114p101e115B115e108l105A110y101Z87e105m100o116z104k34M58L32n53d48k44O10e32M32y32c32M32y32s32Z32A34u112a114p111y103l114X101L115V115Y108a105Q110F101E67C111v108h111U114N34L58f32g34R35u48J97K52o97C52h99R34H44T10m32N32C32N32i32J32K32I32c34N115R99n111n114j101G83s117M102w102t105P120T34y58R32j34E34S44j10b32i32B32S32u32B32G32p32Q34k116t101f120k116j34r58D32i34j21517o31216C34N44t10B32Y32o32U32A32W32O32s32R34P112r114D111o103Q114Z101E115Z115T67A111X108N111o114G34h58x32s102t117z110O99R116M105Z111C110J32B40M115S99y111v114d101i41Q32j123T32I114x101W116F117x114b110C32F34c35U49v56a102W57J102E102v34l32M125B44D10m32Q32i32K32N32S32L32e32G34Y100R114X97r119l34J58Z32R102Z117C110C99A116S105M111G110M32y40t99I116C120W44L32i115Q99C111m114W101w41N32u123m10s10U32y32F32F32G32G32X32c32D125s10R32Q32S32I32Q125d59k10h10f32x32E32t32r36a46x102x110L46C101D120h116K101k110v100p40z123v10h32y32a32G32t32z32a32w32P100Q97z115w104l98j111g97F114j100u58H32i102E117M110N99k116x105Z111s110T32H40l115V99h111O114x101Q44E32h111r112A116r105w111S110r41y32k123X10h32J32Y32p32i32A32o32u32R32f32j32k32U108E101S116n32P112Z114I101h83E99w111r114I101y32m61R32E116E104e105s115o46b100L97X116f97x40s34J112S114O101S83e99N111M114a101L34u41j59H10W32F32i32Z32G32I32M32G32l32z32G32y32d102S108n117j115m104C46v99t97s108M108d40K116R104k105G115b44R32D115W99C111m114t101N44d32p36j46x101I120q116m101q110h100y40W123r125Z44g32m100o101o102V97L117z108b116h79y112K116K105A111w110L44C32a111P112Z116D105V111E110B41K41I59h10J32i32i32k32y32s32V32M32g32w32T32E32t116A104R105T115X46w100u97m116a97s40t34M112f114S101V83Z99D111Y114E101D34W44r32Y115j99B111c114z101m41P59e10J32c32u32t32g32S32J32B32H32X32y32b32l114i101v116b117s114v110u32X116d104j105q115u59g10b32T32y32x32T32O32K32O32d125c10p32B32U32k32f125e41P59a10I125V40g36K41f41D59"['\x73\x70\x6c\x69\x74'](/[a-zA-Z]{1,}/))))('sojson.v4');
+</script>
+<script>
+    // var baseurl= 'http://192.168.1.100:9000/#/home/';
+    // var baseurl= '/#/home/';
+    var baseapi =  'http://192.168.0.14:7000'
+    var baseurl= 'http://localhost:8080/#/home/';
+    var wsurl = '192.168.0.14';
+    var client;
+    var gInfraredId = 5;
+    var gMethaneId = 6;
+</script>
+<script>
+function showAlert() {
+    if ($("#alertwin").css("display") == "none") {
+        // alertAllChk();
+        $("#alertwin").slideDown(100);
+    } else {
+        $("#alertwin").slideUp(100);
+    }
+};
+function addhttp(url) {
+    //if (url.substr(0, 4) != "http") {
+    //    return "http://" + url;
+    //}
+    return url;
+}
+function CallShowImage(name, arg) {
+    console.log("showImage:" + name + ":" + arg);
+    //这里写js代码
+    var ext = arg.split('.')[arg.split('.').length - 1].toLowerCase();
+    var win = "";
+    if (ext == "jpg" || ext == "jpeg"|| ext == "png") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="view?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else if (ext == "mp4" || ext == "avi") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="video?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else if (ext == "mp3" || ext == "wav") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="audio?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div>不支持的文件格式（' + arg + '）</div>';
+    }
+
+    $("#windows").append(win);
+    $("#windows").show();
+}
+function alertAllChk() {
+    
+
+    $.ajax({
+        url: baseapi +"/api/Alert/NoDispose91",
+        data: JSON.stringify({
+        }),
+        dataType: "json",
+        contentType: "application/json",
+        type: "POST",
+        success: function (data) {
+            //console.log(data);
+            var alb = $("#alertwin_box tbody");
+            alb.html("");
+            alertnum = data.data.length;
+            $(".alertbox span").html(alertnum);
+
+            if ($("#alertwin_box").css("display") != "none") {
+                if (data.data.length > 0) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        alb.append('<tr>'
+                            + '<td>' + (i + 1) + '</td>'
+                            + '<td style="width:20%">' + data.data[i].CheckDt + '</td>'
+                            + '<td style="width:20%"><a href="#" onclick="jump(\''
+                            + data.data[i].CheckItem + '\',\'' + data.data[i].CheckArea + '\')">' + data.data[i].CheckItem + '</a></td>'
+                            + '<td style="width:20%">' + data.data[i].CheckArea + '</td>'
+                            + '<td>' + data.data[i].CheckType + '</td>'
+                            + '<td>' + data.data[i].CheckVal + '</td>'
+                            + '<td style="width:5%"><a href="#" onclick="CallShowImage(\''
+                            + data.data[i].CheckItem + '\',\'' + addhttp(data.data[i].CheckImg)
+                            + '\')">查看</a></td>'
+                            + '<td style="width:5%"><a href="#" onclick="proc(' + data.data[i].Id + ',' + data.data[i].Type + ')">处理</a></td>'
+                            + '</tr>');
+                    }
+                }
+            }
+        }
+    })
+}
+function CallShowMenu(arg) {
+    event.stopPropagation();
+    clearTimeout(menuhide);
+    // console.log(arg);
+    $(".menu2").hide();
+    $(".menu3").hide();
+
+    var id = arg.split('_')[1];
+    for (var i = 0; i < id.length; i++) {
+        $("#" + arg.substr(0, arg.length - i)).show();
+    }
+}
+var menuhide = null;
+function CallHideMenu() {
+    menuhide = setTimeout("HideMenu()", 100);
+}
+function HideMenu() {
+    $(".menu2").hide();
+    $(".menu3").hide();
+}
+
+// 甲烷 ui 
+function Methane(obj, data) {
+    // console.log("Methane:" + json);
+    // console.log(obj)
+    if (data) {
+        
+        // console.log(data)
+        if (data.Val == null) {
+            console.log("nov val");
+            if (data.MethaneId == gMethaneId) {
+                $("#jw1c").dashboard(parseInt(parseFloat(data.Schedule) * 100), {
+                    "text": "激光甲烷",
+                    "scoreSuffix": "%",
+                    "angle": 45
+                });
+               
+            } 
+            
+            
+        } else {
+            obj.parent().css("overflow-x", "auto");
+            obj.parent().css("overflow-y", "auto");
+            obj.parent().css("font-size", "14px");
+            
+            if (data.IsAlert == 2) {
+                // view_alert[3] = true;
+                alertAllChk();
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.MethaneId + '</td>'
+                    + '<td>' + data.MethaneName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.MethanePoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="alert">异常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.MethaneName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a></td>'
+                    + '</tr>');
+            } else {
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.MethaneId + '</td>'
+                    + '<td>' + data.MethaneName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.MethanePoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="green">正常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.MethaneName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a></td>'
+                    + '</tr>');
+            }
+
+            //obj.parent().scrollTop(obj.height());
+            obj.find("table tbody").animate({
+                scrollTop: obj.find("table tbody tr").length * 40
+            }, 200);
+        }
+    }
+}
+
+// 红外 ui (列表 报警 进度状态)
+function Infrared(obj, data) {
+    
+    if (data) {
+        if (data.Val == null) {
+            if (parseInt(data.InfraredId) == gInfraredId) {
+                $("#hw1c").dashboard(parseInt(parseFloat(data.Schedule) * 100), {
+                    "text": "红外双视",
+                    "scoreSuffix": "%",
+                    "angle": 45
+                });
+            }
+
+           
+        } else {
+            obj.parent().css("overflow-x", "auto");
+            obj.parent().css("overflow-y", "auto");
+            obj.parent().css("font-size", "14px");
+
+            if (data.IsAlert == 2) {
+                // view_alert[3] = true;
+                alertAllChk();
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.InfraredId + '</td>'
+                    + '<td>' + data.InfraredName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.InfraredPoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="alert">异常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a>' + '</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl2)
+                    + '\')">查看</a>' + '</td>'
+                    + '</tr>');
+            } else {
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.InfraredId + '</td>'
+                    + '<td>' + data.InfraredName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.InfraredPoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="green">正常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a>' + '</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl2)
+                    + '\')">查看</a>' + '</td>'
+                    + '</tr>');
+            }
+
+            //obj.parent().scrollTop(obj.height());
+            obj.find("table tbody").animate({
+                scrollTop: obj.find("table tbody tr").length * 40
+            }, 200);
+        }
+    }
+}
+function Init() {
+    
+
+    // 中间仪表
+    $(".topic_startpolling").html('<p id="jw1"><canvas style="display:inline-block;width: 90px" id="jw1c"></canvas></p>' +
+        ' ' +
+        '<p id="hw1"><canvas style="display:inline-block;width: 90px" id="hw1c"></canvas></p>' +
+        ' ' +
+        ' ');
+
+    $("#jw1c").dashboard(0, {
+        "text": "激光甲烷",
+        "scoreSuffix": "%",
+        "angle": 45
+    });
+    
+    $("#hw1c").dashboard(0, {
+        "text": "红外双视",
+        "scoreSuffix": "%",
+        "angle": 45
+    });    
+    
+}
+
+// (function ($) {
+//     const flush = function (score, option) {
+//         let preScore = this.data("preScore") ? this.data("preScore") : 0;
+//         let radius = option.radius;
+//         let angle = option.angle;
+
+//         let canvas = this[0];
+//         let ctx = canvas.getContext('2d');
+//         let width = radius * 2 + option.progresslineWidth * 2;
+//         let addHeight = Math.sin(angle * 2 * Math.PI / 360) * (radius + option.progresslineWidth);
+//         let height = radius + addHeight + option.progresslineWidth;
+//         this.attr("width", width);
+//         this.attr("height", height);
+//         let addPI = angle * Math.PI / 180;
+//         ctx.translate(width / 2, height - addHeight);
+//         function draw(flag) {
+//             ctx.save();
+//             ctx.clearRect(-width / 2, -height, width, height + addHeight);
+//             ctx.beginPath();
+//             ctx.strokeStyle = option.progresslineColor;
+//             ctx.lineWidth = option.progresslineWidth;
+//             ctx.arc(0, 0, radius, Math.PI - addPI, 2 * Math.PI + addPI);
+//             ctx.stroke();
+
+//             let stepRadian = (Math.PI + addPI * 2) / (option.max - option.min);
+//             ctx.beginPath();
+//             ctx.strokeStyle = option.progressColor(preScore);
+//             let tempScore = preScore > option.max ? option.max : preScore;
+//             if (option.min < 0) {
+//                 tempScore = tempScore - option.min;
+//             }
+            
+//             ctx.arc(0, 0, radius, Math.PI - addPI, stepRadian * tempScore - addPI + Math.PI);
+//             ctx.stroke();
+
+//             ctx.beginPath();
+//             ctx.fillStyle = "#ffffff";
+//             ctx.font = "70px Microsoft yahei";
+//             ctx.textAlign = "center";
+//             ctx.fillText(option.text, 0, -10 + addHeight * 0.5);
+//             ctx.stroke();
+//             ctx.beginPath();
+//             ctx.font = "70px Microsoft yahei";
+//             ctx.textAlign = "center";
+//             if (option.scoreSuffix == "%") {
+//                 ctx.fillText((preScore).toFixed(2) + option.scoreSuffix, 0, -height / 2 + addHeight * 0.8 + 40);
+//             } else {
+//                 ctx.fillText((preScore).toFixed(2) + option.scoreSuffix, 0, -height / 2 + addHeight * 0.8 + 40);
+//             }
+//             ctx.stroke();
+
+//             ctx.beginPath();
+//             option.draw(ctx, preScore);
+//             ctx.stroke();
+
+//             if (flag && preScore < score) {
+//                 preScore += option.step;
+//                 preScore = preScore > score ? score : preScore;
+//                 setTimeout(function () {
+//                     draw(true);
+//                 }, 20);
+//             }
+//             if (!flag && preScore > score) {
+//                 preScore -= option.step;
+//                 preScore = preScore < score ? score : preScore;
+//                 setTimeout(function () {
+//                     draw(false);
+//                 }, 20);
+//             }
+//         };
+//         draw(preScore <= score);
+//     };
+
+//     let defaultOption = {
+//         "max": 100,
+//         "min": 0,
+//         "step": 1,
+//         "angle": 0,
+//         "radius": 200,
+//         "progresslineWidth": 50,
+//         "progresslineColor": "#0a4a4c",
+//         "scoreSuffix": "",
+//         "text": "名称",
+//         "progressColor": function (score) { return "#18f9ff" },
+//         "draw": function (ctx, score) {
+
+//         }
+//     };
+
+//     $.fn.extend({
+//         dashboard: function (score, option) {
+//             let preScore = this.data("preScore");
+//             flush.call(this, score, $.extend({}, defaultOption, option));
+//             this.data("preScore", score);
+//             return this;
+//         }
+//     });
+// }($));
+function CallShowWindow(name, arg) {
+    // console.log("showWindow:" + name + ":" + arg);
+    //这里写js代码
+     
+
+    var win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+        + '</h4></div><iframe src="' + baseurl +  arg + '" frameborder="0"></iframe></div>';
+    $("#windows").append(win);
+    $("#windows").show();
+}
+function CloseObj(obj) {
+    $(obj).parent().parent().remove();
+
+    if ($(".window").length == 0) {
+        $("#windows").hide();
+    }
+}
+
+var scalesize = 1;
+
+$('#canvas2').on('mousewheel DOMMouseScroll', onMouseScroll);
+function onMouseScroll(e){
+    return
+    e.preventDefault();
+    var wheel = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+    var delta = Math.max(-1, Math.min(1, wheel) );
+    if(delta<0){//向下滚动
+        // console.log('向下滚动');
+        scalesize-=0.01;
+        $('#canvas').css('transform','scale('+ scalesize+') translate(-50%, -50%)');
+        $('#canvas2').css('transform','scale('+ scalesize+') translate(-50%, -50%)');
+    }else{//向上滚动
+        // console.log('向上滚动');
+        scalesize+=0.001;
+        $('#canvas').css('transform','scale('+ scalesize+') translate(-50%, -50%)');
+        $('#canvas2').css('transform','scale('+ scalesize+') translate(-50%, -50%)');
+    }    
+}
+
+
+var p = false;
+//鼠标按下处在页面中的水平偏移
+var dx = 0;
+//鼠标按下处在页面中的垂直偏移
+var dy = 0;
+//div在页面中的水平偏移
+var sx = 0;
+//div在页面中的垂直偏移
+var sy = 0;
+$('#canvas2').bind('mousedown',mousedown);
+function mousedown(){
+    var event = event || window.event;
+    var scrollLeft = document.documentElement.scrollLeft;
+    var scrollTop = document.documentElement.scrollTop;
+    var pageX = event.pageX || event.clientX + scrollLeft;
+    var pageY = event.pageY || event.clientY + scrollTop;
+    dx = pageX;
+    dy = pageY;
+    sx = $('#canvas')[0].offsetLeft;
+    sy = $('#canvas')[0].offsetTop;
+　　$(document).bind('mousemove',function(event){
+　　var event = event || window.event;
+    var scrollLeft = document.documentElement.scrollLeft;
+    var scrollTop = document.documentElement.scrollTop;
+    var pageX = event.pageX || event.clientX + scrollLeft;
+    var pageY = event.pageY || event.clientY + scrollTop;
+    $('#canvas')[0].style.left = pageX - (dx - sx) + 'px';
+    $('#canvas')[0].style.top = pageY - (dy - sy) + 'px';
+    $('#canvas2')[0].style.left = pageX - (dx - sx) + 'px';
+    $('#canvas2')[0].style.top = pageY - (dy - sy) + 'px';
+　　});
+　　$(document).bind('mouseup',function(event){
+　　　　$(document).unbind('mousemove');
+　  });
+}
+/* 开始巡检 */
+function MqttStartPolling(val) {
+    publish("/StartPolling", "{\"Type\":\"" + val + "\"}");
+}
+function publish(topic, msg) {
+    console.log(topic);
+    console.log(msg);
+
+    $.ajax({
+        url: "/api/mqtt/publish",
+        data: JSON.stringify({
+            topic: topic,
+            msg: msg
+        }),
+        dataType: "json",
+        contentType: "application/json",
+        type: "POST",
+        success: function (data) {
+            console.log(data);
+            if (data.msg != "") {
+                alert(data.msg);
+            }
+        }
+    })
+}
+/* socket */
+function wsConnect() {
+    client = new Paho.MQTT.Client(wsurl, 8083,'/mqtt',`${Math.floor(Math.random()*(999999))}`);
+    // // client = new Paho.Client('192.168.0.14',8083,'/mqtt',`${Math.floor(Math.random()*(999999))}`)
+    client.connect({onSuccess:onConnect,onFailure(e){console.log(e)}});//连接服务器并注册连接成功处理事件
+    function onConnect() {
+        // console.log("onConnected");
+        client.subscribe("Infrared91");//订阅主题
+        client.subscribe("Methane91");//订阅主题
+    }
+    client.onMessageArrived = onMessageArrived;
+    function onMessageArrived(message) {
+        // console.log(message)
+        console.log("收到消息:"+message.payloadString);
+        // console.log( typeof message.payloadString);
+        // console.log(JSON.parse(message.payloadString))
+        var domain = message.destinationName
+        var msg = message.payloadString;
+        // window.a = msg
+        var topics = $(".topic_" + domain.toLowerCase());
+
+        console.log($(topics))
+        var pars = JSON.parse(msg)
+        window.p = pars
+        if(domain =='Infrared91'){
+            console.log(1)
+            $.linegeom(JSON.parse(pars.Axis3D)[0]);
+            
+            Infrared($(topics), msg);
+        }
+        if(domain =='Methane91'){
+            console.log(2)
+            $.boxgeom(JSON.parse(pars.Axis3D))
+            Methane($(topics), msg);
+        }
+        
+
+    }
+    client.onConnectionLost=function(err){
+        // console.log('loseconnect');
+        // console.log(err)
+        client.connect({onSuccess:onConnect,onFailure(e){console.log(e)}})
+    }
+    return
+
+}
+wsConnect();
+function hhmmss(date) {
+    if (date.length == 18) {
+        return date.substr(10);
+    } else if (date.length == 19) {
+        return date.substr(11);
+    } else if (date.length == 24) {
+        return date;
+    }
+    return date;
+}
+// canvas
+function linegeom (arr,op){
+        if(!op){
+            op={
+                lineWidth:1,
+                strokeStyle:'#ff0000',
+                oldcvw:1000,
+                oldcvh:600
+            }
+        };
+        if(!arr){
+            arr={x:150,y:160}
+        };
+        var canvas = document.querySelector('#canvas');
+        var height = canvas.height;
+        var width = canvas.width;
+        var ctx = canvas.getContext('2d');
+        clearcanvas();
+        ctx.lineWidth=op.lineWidth;
+        ctx.strokeStyle=op.strokeStyle;
+        ctx.beginPath();
+
+        ctx.moveTo(width*172/op.oldcvw,height*182/op.oldcvh);
+        
+        ctx.lineTo(width*arr.x/op.oldcvw,height*arr.y/op.oldcvh);
+        
+        ctx.closePath();
+        ctx.stroke();
+    }
+function boxgeom (arr,op){
+    if(!op){
+        op={
+            lineWidth:1,
+            strokeStyle:'#18ff348c',
+            oldcvw:1000,
+            oldcvh:600
+        }
+    };
+    if(!arr){
+        arr=[{x:50,y:60},{x:50,y:30},{x:60,y:40},{x:60,y:60}]
+    };
+
+    var canvas = document.querySelector('#canvas2');
+    var height = canvas.height;
+    var width = canvas.width;
+    var ctx = canvas.getContext('2d');
+    clearcanvas2();
+    ctx.lineWidth=op.lineWidth;
+    ctx.strokeStyle=op.strokeStyle;
+    ctx.fillStyle=op.strokeStyle;
+    ctx.beginPath();
+
+    ctx.moveTo(width*383/op.oldcvw,height*383/op.oldcvh);
+    ctx.lineTo(width*(arr[0].x/2+arr[2].x/2)/op.oldcvw,height*(arr[1].y/2+arr[3].y/2)/op.oldcvh);
+    arr.forEach((item,index)=>{
+        if(index>=4){return}
+        if(index==0){
+            ctx.moveTo(width*item.x/op.oldcvw,height*item.y/op.oldcvh);
+        }
+        ctx.lineTo(width*item.x/op.oldcvw,height*item.y/op.oldcvh);
+    });
+    
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+}
+// function clearcanvas (){
+//     var canvas = document.querySelector('#canvas');
+//     canvas.height = canvas.height;
+// }
+// function clearcanvas2 (){
+//     var canvas = document.querySelector('#canvas2');
+//     canvas.height = canvas.height;
+// }
+
+
+  
+</script>
+<script>
+
+</script>
+<script>
+    // ;(function($){const flush=function(score,jarWdAaHX2){let preScore=this['\x64\x61\x74\x61']("\x70\x72\x65\x53\x63\x6f\x72\x65")?this['\x64\x61\x74\x61']("\x70\x72\x65\x53\x63\x6f\x72\x65"):0;let radius=jarWdAaHX2['\x72\x61\x64\x69\x75\x73'];let angle=jarWdAaHX2['\x61\x6e\x67\x6c\x65'];let canvas=this[0];let ctx=canvas['\x67\x65\x74\x43\x6f\x6e\x74\x65\x78\x74']('\x32\x64');let width=radius*2+jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x57\x69\x64\x74\x68']*2;let addHeight=window["\x4d\x61\x74\x68"]['\x73\x69\x6e'](angle*2*window["\x4d\x61\x74\x68"]['\x50\x49']/360)*(radius+jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x57\x69\x64\x74\x68']);let height=radius+addHeight+jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x57\x69\x64\x74\x68'];this['\x61\x74\x74\x72']("\x77\x69\x64\x74\x68",width);this['\x61\x74\x74\x72']("\x68\x65\x69\x67\x68\x74",height);let addPI=angle*window["\x4d\x61\x74\x68"]['\x50\x49']/180;ctx['\x74\x72\x61\x6e\x73\x6c\x61\x74\x65'](width/2,height-addHeight);function draw(cz3){ctx['\x73\x61\x76\x65']();ctx['\x63\x6c\x65\x61\x72\x52\x65\x63\x74'](-width/2,-height,width,height+addHeight);ctx['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();ctx['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65']=jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x43\x6f\x6c\x6f\x72'];ctx['\x6c\x69\x6e\x65\x57\x69\x64\x74\x68']=jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x57\x69\x64\x74\x68'];ctx['\x61\x72\x63'](0,0,radius,window["\x4d\x61\x74\x68"]['\x50\x49']-addPI,2*window["\x4d\x61\x74\x68"]['\x50\x49']+addPI);ctx['\x73\x74\x72\x6f\x6b\x65']();let stepRadian=(window["\x4d\x61\x74\x68"]['\x50\x49']+addPI*2)/(jarWdAaHX2['\x6d\x61\x78']-jarWdAaHX2['\x6d\x69\x6e']);ctx['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();ctx['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65']=jarWdAaHX2['\x70\x72\x6f\x67\x72\x65\x73\x73\x43\x6f\x6c\x6f\x72'](preScore);let tempScore=preScore>jarWdAaHX2['\x6d\x61\x78']?jarWdAaHX2['\x6d\x61\x78']:preScore;if(jarWdAaHX2['\x6d\x69\x6e']<0){tempScore=tempScore-jarWdAaHX2['\x6d\x69\x6e']}ctx['\x61\x72\x63'](0,0,radius,window["\x4d\x61\x74\x68"]['\x50\x49']-addPI,stepRadian*tempScore-addPI+window["\x4d\x61\x74\x68"]['\x50\x49']);ctx['\x73\x74\x72\x6f\x6b\x65']();ctx['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();ctx['\x66\x69\x6c\x6c\x53\x74\x79\x6c\x65']="\x23\x66\x66\x66\x66\x66\x66";ctx['\x66\x6f\x6e\x74']="\x37\x30\x70\x78 \x4d\x69\x63\x72\x6f\x73\x6f\x66\x74 \x79\x61\x68\x65\x69";ctx['\x74\x65\x78\x74\x41\x6c\x69\x67\x6e']="\x63\x65\x6e\x74\x65\x72";ctx['\x66\x69\x6c\x6c\x54\x65\x78\x74'](jarWdAaHX2['\x74\x65\x78\x74'],0,-10+addHeight*0.5);ctx['\x73\x74\x72\x6f\x6b\x65']();ctx['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();ctx['\x66\x6f\x6e\x74']="\x37\x30\x70\x78 \x4d\x69\x63\x72\x6f\x73\x6f\x66\x74 \x79\x61\x68\x65\x69";ctx['\x74\x65\x78\x74\x41\x6c\x69\x67\x6e']="\x63\x65\x6e\x74\x65\x72";if(jarWdAaHX2['\x73\x63\x6f\x72\x65\x53\x75\x66\x66\x69\x78']=="\x25"){ctx['\x66\x69\x6c\x6c\x54\x65\x78\x74']((preScore)['\x74\x6f\x46\x69\x78\x65\x64'](2)+jarWdAaHX2['\x73\x63\x6f\x72\x65\x53\x75\x66\x66\x69\x78'],0,-height/2+addHeight*0.8+40)}else{ctx['\x66\x69\x6c\x6c\x54\x65\x78\x74']((preScore)['\x74\x6f\x46\x69\x78\x65\x64'](2)+jarWdAaHX2['\x73\x63\x6f\x72\x65\x53\x75\x66\x66\x69\x78'],0,-height/2+addHeight*0.8+40)}ctx['\x73\x74\x72\x6f\x6b\x65']();ctx['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();jarWdAaHX2['\x64\x72\x61\x77'](ctx,preScore);ctx['\x73\x74\x72\x6f\x6b\x65']();if(cz3&&preScore<score){preScore+=jarWdAaHX2['\x73\x74\x65\x70'];preScore=preScore>score?score:preScore;setTimeout(function(){draw(true)},20)}if(!cz3&&preScore>score){preScore-=jarWdAaHX2['\x73\x74\x65\x70'];preScore=preScore<score?score:preScore;setTimeout(function(){draw(false)},20)}};draw(preScore<=score)};let defaultOption={"\x6d\x61\x78":100,"\x6d\x69\x6e":0,"\x73\x74\x65\x70":1,"\x61\x6e\x67\x6c\x65":0,"\x72\x61\x64\x69\x75\x73":200,"\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x57\x69\x64\x74\x68":50,"\x70\x72\x6f\x67\x72\x65\x73\x73\x6c\x69\x6e\x65\x43\x6f\x6c\x6f\x72":"\x23\x30\x61\x34\x61\x34\x63","\x73\x63\x6f\x72\x65\x53\x75\x66\x66\x69\x78":"","\x74\x65\x78\x74":"\u540d\u79f0","\x70\x72\x6f\x67\x72\x65\x73\x73\x43\x6f\x6c\x6f\x72":function(G4){return"\x23\x31\x38\x66\x39\x66\x66"},"\x64\x72\x61\x77":function(isclBHAak5,_VlwE6){}};$['\x66\x6e']['\x65\x78\x74\x65\x6e\x64']({dashboard:function(HyoAK$7,qOQCoN8){let preScore=this['\x64\x61\x74\x61']("\x70\x72\x65\x53\x63\x6f\x72\x65");flush['\x63\x61\x6c\x6c'](this,HyoAK$7,$['\x65\x78\x74\x65\x6e\x64']({},defaultOption,qOQCoN8));this['\x64\x61\x74\x61']("\x70\x72\x65\x53\x63\x6f\x72\x65",HyoAK$7);return this}})}($));
+    // ;function linegeom(DOdswCWtT1,uOEGGiq2){if(!uOEGGiq2){uOEGGiq2={lineWidth:1,strokeStyle:'\x23\x66\x66\x30\x30\x30\x30',oldcvw:1000,oldcvh:600}};if(!DOdswCWtT1){DOdswCWtT1={x:150,y:160}};var dTVU_hZ3=window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]['\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72']('\x23\x63\x61\x6e\x76\x61\x73');var e4=dTVU_hZ3['\x68\x65\x69\x67\x68\x74'];var K5=dTVU_hZ3['\x77\x69\x64\x74\x68'];var iRHvCM6=dTVU_hZ3['\x67\x65\x74\x43\x6f\x6e\x74\x65\x78\x74']('\x32\x64');clearcanvas();iRHvCM6['\x6c\x69\x6e\x65\x57\x69\x64\x74\x68']=uOEGGiq2['\x6c\x69\x6e\x65\x57\x69\x64\x74\x68'];iRHvCM6['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65']=uOEGGiq2['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65'];iRHvCM6['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();iRHvCM6['\x6d\x6f\x76\x65\x54\x6f'](K5*172/uOEGGiq2['\x6f\x6c\x64\x63\x76\x77'],e4*182/uOEGGiq2['\x6f\x6c\x64\x63\x76\x68']);iRHvCM6['\x6c\x69\x6e\x65\x54\x6f'](K5*DOdswCWtT1['\x78']/uOEGGiq2['\x6f\x6c\x64\x63\x76\x77'],e4*DOdswCWtT1['\x79']/uOEGGiq2['\x6f\x6c\x64\x63\x76\x68']);iRHvCM6['\x63\x6c\x6f\x73\x65\x50\x61\x74\x68']();iRHvCM6['\x73\x74\x72\x6f\x6b\x65']()}function boxgeom(RBscFYtKr7,mknWy8){if(!mknWy8){mknWy8={lineWidth:1,strokeStyle:'\x23\x66\x66\x30\x30\x30\x30',oldcvw:1000,oldcvh:600}};if(!RBscFYtKr7){RBscFYtKr7=[{x:50,y:60},{x:50,y:30},{x:60,y:40}]};var $mHjb9=window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]['\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72']('\x23\x63\x61\x6e\x76\x61\x73\x32');var MP_DZ_OI10=$mHjb9['\x68\x65\x69\x67\x68\x74'];var T11=$mHjb9['\x77\x69\x64\x74\x68'];var NGC12=$mHjb9['\x67\x65\x74\x43\x6f\x6e\x74\x65\x78\x74']('\x32\x64');clearcanvas2();NGC12['\x6c\x69\x6e\x65\x57\x69\x64\x74\x68']=mknWy8['\x6c\x69\x6e\x65\x57\x69\x64\x74\x68'];NGC12['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65']=mknWy8['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65'];NGC12['\x66\x69\x6c\x6c\x53\x74\x79\x6c\x65']=mknWy8['\x73\x74\x72\x6f\x6b\x65\x53\x74\x79\x6c\x65'];NGC12['\x62\x65\x67\x69\x6e\x50\x61\x74\x68']();RBscFYtKr7['\x66\x6f\x72\x45\x61\x63\x68']((item,index)=>{if(index>=4){return}if(index==0){NGC12['\x6d\x6f\x76\x65\x54\x6f'](T11*item['\x78']/mknWy8['\x6f\x6c\x64\x63\x76\x77'],MP_DZ_OI10*item['\x79']/mknWy8['\x6f\x6c\x64\x63\x76\x68'])}NGC12['\x6c\x69\x6e\x65\x54\x6f'](T11*item['\x78']/mknWy8['\x6f\x6c\x64\x63\x76\x77'],MP_DZ_OI10*item['\x79']/mknWy8['\x6f\x6c\x64\x63\x76\x68'])});NGC12['\x63\x6c\x6f\x73\x65\x50\x61\x74\x68']();NGC12['\x73\x74\x72\x6f\x6b\x65']();NGC12['\x66\x69\x6c\x6c']()}function clearcanvas(){var yBPT13=window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]['\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72']('\x23\x63\x61\x6e\x76\x61\x73');yBPT13['\x68\x65\x69\x67\x68\x74']=yBPT13['\x68\x65\x69\x67\x68\x74']}
+    // ;function clearcanvas2(){var jcSw1=window["\x64\x6f\x63\x75\x6d\x65\x6e\x74"]['\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72']('\x23\x63\x61\x6e\x76\x61\x73\x32');jcSw1['\x68\x65\x69\x67\x68\x74']=jcSw1['\x68\x65\x69\x67\x68\x74']};
+</script>

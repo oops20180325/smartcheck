@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泾阳分输站综合智能巡检平台</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/viewer.min.css">
+    <script src="/lib/jquery.min.js"></script>
+    <script src="/lib/viewer.min.js"></script>
+    <script src="/lib/jquery-viewer.min.js"></script>
+    <script src="/lib/mqtt31.js"></script>
+    <script src="/lib/tool.js"></script>
+    <style>
+        body{
+            user-select: none;
+        }
+        .maincanvas {
+            /* width: 80%; */
+            width: 1300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background-image: url('./91.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+        }
+        .maincanvas2 {
+            /* width: 80%; */
+            width: 1300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body onload="Init()">
+    <canvas id='canvas'  class='maincanvas' width="1000" height="600">浏览器不支持canvas</canvas>
+    <canvas id='canvas2'  class='maincanvas2' width="1000" height="600">浏览器不支持canvas</canvas>
+    <div id="title">泾阳分输站综合智能巡检平台</div>
+        
+
+        <div class="block" style="left: 1%; top: 50px; width: 250px; height: 200px;">
+            <h4>红外双视</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:10px; bottom:10px;">
+                <div class="video"><iframe src="http://192.168.1.100:8000/player?token17" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="block" style="left:1%; top: 260px; width: 250px; height: 200px;">
+            <h4>红外双视</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:10px; bottom:10px;">
+                <div class="video"><iframe src="http://192.168.1.100:8000/player?token18" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <div class="block" style="right:1%; top:50px; width: 250px; height: 200px;">
+            <h4>激光甲烷</h4>
+            <div class="subblock" style="left: 10px; top: 30px; right:10px; bottom:10px;">
+                <div class="video"><iframe src="http://192.168.1.100:8000/player?token19" width="100%" height="100%" frameborder="0"
+                        allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>
+                </div>
+            </div>
+           
+        </div>
+        <div class="block" style="left: 1%; bottom: 50px; width: calc(50% - 150px); height: 200px;">
+            <h4>激光甲烷巡检记录</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_methane topic_methane91" id="topic_methane">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>设备名称</th>
+                                <th>预置位</th>
+                                <th>检测值</th>
+                                <th>报警</th>
+                                <th>照片</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="block" style="left: 50%; bottom: 50px; margin-left:-120px; width: 240px; height: 200px;">
+            <h4>巡检状态</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_startpolling" style="padding-top: 35px;" id="topic_startpolling">
+                    <p id="jw1"><canvas style="display:inline-block;width: 70px" id="jw1c" width="500"
+                            height="426.77669529663683"></canvas></p>
+                    
+                    <p id="hw1"><canvas style="display:inline-block;width: 70px" id="hw1c" width="500"
+                            height="426.77669529663683"></canvas></p>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="block" style="right: 1%; bottom: 50px; width: calc(50% - 150px); height: 200px;">
+            <h4>红外双视巡检记录</h4>
+            <div class="subblock" style="left: 0px; top: 30px; width: 100%; bottom: 0px;">
+                <div class="topic_infrared topic_infrared91" id="topic_infrared">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>设备名称</th>
+                                <th>位置</th>
+                                <th>检测值</th>
+                                <th>报警</th>
+                                <th>红外光</th>
+                                <th>可见光</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="menu">
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_1')" href="#"
+                    onclick="MqttStartPolling('91')">开始巡检</a></div>
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_2')">巡检管理</a>
+                <div id="m_2" class="menu2">
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_21')">红外双视云台</a>
+                        <div id="m_21" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_211')" href="#"
+                                    onclick="CallShowWindow('设备管理','lightmeter')">设备管理</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_212')" href="#"
+                                    onclick="CallShowWindow('点位管理','lightpoint')">点位管理</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_22')">激光甲烷遥测</a> 
+                        <div id="m_22" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_221')" href="#"
+                                    onclick="CallShowWindow('设备管理','ch4meter')">设备管理</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_222')" href="#"
+                                    onclick="CallShowWindow('点位管理','ch4point')">点位管理</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_23')" href="#"
+                            onclick="CallShowWindow('自动巡检设置','pollingSet')">自动巡检设置</a>
+                    </div>
+                </div>
+            </div>
+            <div class="btline"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_3')">事件管理</a>
+                <div id="m_3" class="menu2">
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_31')">报警事件</a>
+                        <div id="m_31" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_311')" href="#"
+                                    onclick="CallShowWindow('红外双视报警','lightalarm')">红外双视报警</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_312')" href="#"
+                                    onclick="CallShowWindow('激光甲烷报警','ch4alarm')">激光甲烷报警</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_33')">巡检记录</a>
+                        <div id="m_33" class="menu3">
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_331')" href="#"
+                                    onclick="CallShowWindow('红外巡检记录','lightlog')">红外巡检记录</a>
+                            </div>
+                            <div class="bt"><a onmouseout="CallHideMenu()" onmouseover="CallShowMenu('m_332')" href="#"
+                                    onclick="CallShowWindow('甲烷巡检记录','ch4log')">甲烷巡检记录</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div id="alertwin">
+            <div class="subblock" id="alertwin_box">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th style="width:20%">时间</th>
+                            <th style="width:20%">检测项目</th>
+                            <th style="width:20%">区域</th>
+                            <th>类型</th>
+                            <th>值</th>
+                            <th style="width:5%">画面</th>
+                            <th style="width:5%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="close" onclick="$('#alertwin').slideUp(100)">X</div>
+            </div>
+        </div>
+        <div class="alertbox" onclick="showAlert()">
+            <img src="ui/alert.png">
+            <span></span>
+        </div>
+        <div id="alertpost">
+            <div class="subblock" id="alertpost_box">
+                <iframe id="remark" src="" frameborder="0" style="width:100%;height:100%;"></iframe>
+                <div class="close" onclick="$('#alertpost').hide()">X</div>
+            </div>
+        </div>
+        <div id="windows">
+
+        </div>
+    
+    
+</body>
+
+</html>
+
+<script>
+    var baseapi =  'http://192.168.1.100:7000';
+    var baseurl= 'http://192.168.1.100:9001/#/home/';
+    var wsurl = '192.168.1.100';
+    
+    // var wsurl = '192.168.0.14';
+    // var wsurl = '127.0.0.1';
+    // var baseapi =  'http://192.168.0.14:7000';
+    // var baseurl= 'http://localhost:8080/#/home/';
+
+
+    var client;
+    var gInfraredId = 5;
+    var gMethaneId = 6;
+    var timer;
+    var timer2;
+    var alertnum = 0;
+</script>
+<script>
+function showAlert() {
+    if ($("#alertwin").css("display") == "none") {
+        alertAllChk();
+        $("#alertwin").slideDown(100);
+    } else {
+        $("#alertwin").slideUp(100);
+    }
+};
+function addhttp(url) {
+    //if (url.substr(0, 4) != "http") {
+    //    return "http://" + url;
+    //}
+    return url;
+}
+function CallShowImage(name, arg) {
+    console.log("showImage:" + name + ":" + arg);
+    //这里写js代码
+    var ext = arg.split('.')[arg.split('.').length - 1].toLowerCase();
+    var win = "";
+    if (ext == "jpg" || ext == "jpeg"|| ext == "png") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="view?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else if (ext == "mp4" || ext == "avi") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="video?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else if (ext == "mp3" || ext == "wav") {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div><iframe src="audio?path=' + arg + '" frameborder="0"></iframe></div>';
+    } else {
+        win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+            + '</h4></div>不支持的文件格式（' + arg + '）</div>';
+    }
+
+    $("#windows").append(win);
+    $("#windows").show();
+}
+function alertAllChk() {
+   
+    $.ajax({
+        url: baseapi +"/api/Alert/NoDispose91",
+        data: JSON.stringify({
+        }),
+        dataType: "json",
+        contentType: "application/json",
+        type: "POST",
+        success: function (data) {
+            //console.log(data);
+            var alb = $("#alertwin_box tbody");
+            alb.html("");
+            alertnum = data.data.length;
+            $(".alertbox span").html(alertnum);
+
+            if ($("#alertwin_box").css("display") != "none") {
+                if (data.data.length > 0) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        alb.append('<tr>'
+                            + '<td>' + (i + 1) + '</td>'
+                            + '<td style="width:20%">' + data.data[i].CheckDt + '</td>'
+                            + '<td style="width:20%"><a href="#" onclick="jump(\''
+                            + data.data[i].CheckItem + '\',\'' + data.data[i].CheckArea + '\')">' + data.data[i].CheckItem + '</a></td>'
+                            + '<td style="width:20%">' + data.data[i].CheckArea + '</td>'
+                            + '<td>' + data.data[i].CheckType + '</td>'
+                            + '<td>' + data.data[i].CheckVal + '</td>'
+                            + '<td style="width:5%"><a href="#" onclick="CallShowImage(\''
+                            + data.data[i].CheckItem + '\',\'' + addhttp(data.data[i].CheckImg)
+                            + '\')">查看</a></td>'
+                            + '<td style="width:5%"><a href="#" onclick="proc(' + data.data[i].Id + ',' + data.data[i].Type + ')">处理</a></td>'
+                            + '</tr>');
+                    }
+                }
+            }
+        }
+    })
+}
+function CallShowMenu(arg) {
+    event.stopPropagation();
+    clearTimeout(menuhide);
+    // console.log(arg);
+    $(".menu2").hide();
+    $(".menu3").hide();
+
+    var id = arg.split('_')[1];
+    for (var i = 0; i < id.length; i++) {
+        $("#" + arg.substr(0, arg.length - i)).show();
+    }
+}
+var menuhide = null;
+function CallHideMenu() {
+    menuhide = setTimeout("HideMenu()", 100);
+}
+function HideMenu() {
+    $(".menu2").hide();
+    $(".menu3").hide();
+}
+
+// 甲烷 ui 
+function Methane(obj, data) {
+    // console.log("Methane:" + json);
+    // console.log(obj)
+    if (data) {
+        
+        // console.log(data)
+        if (data.Val == null) {
+            console.log("nov val");
+            if (data.MethaneId == gMethaneId) {
+                $("#jw1c").dashboard(parseInt(parseFloat(data.Schedule) * 100), {
+                    "text": "激光甲烷",
+                    "scoreSuffix": "%",
+                    "angle": 45
+                });
+               if(Number(data.Schedule) == 1){
+                    if(timer2){
+                        clearTimeout(timer2)
+                    }
+                    setTimeout(function(){
+                        clearcanvas();
+                    },1500)
+               }
+            } 
+            
+            
+        } else {
+            obj.parent().css("overflow-x", "auto");
+            obj.parent().css("overflow-y", "auto");
+            obj.parent().css("font-size", "14px");
+            
+            if (data.IsAlert == 2) {
+                // view_alert[3] = true;
+                alertAllChk();
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.MethaneId + '</td>'
+                    + '<td>' + data.MethaneName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.MethanePoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="alert">异常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.MethaneName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a></td>'
+                    + '</tr>');
+            } else {
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.MethaneId + '</td>'
+                    + '<td>' + data.MethaneName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.MethanePoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="green">正常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.MethaneName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a></td>'
+                    + '</tr>');
+            }
+
+            //obj.parent().scrollTop(obj.height());
+            obj.find("table tbody").animate({
+                scrollTop: obj.find("table tbody tr").length * 40
+            }, 200);
+        }
+    }
+}
+
+// 红外 ui (列表 报警 进度状态)
+function Infrared(obj, data) {
+    
+    if (data) {
+        if (data.Val == null) {
+            if (parseInt(data.InfraredId) == gInfraredId) {
+                $("#hw1c").dashboard(parseInt(parseFloat(data.Schedule) * 100), {
+                    "text": "红外双视",
+                    "scoreSuffix": "%",
+                    "angle": 45
+                });
+
+                if(Number(data.Schedule) == 1){
+                    if(timer){
+                        clearTimeout(timer)
+                    }
+                    setTimeout(function(){
+                        clearcanvas2();
+                    },1500)
+               }
+            }
+
+           
+        } else {
+            obj.parent().css("overflow-x", "auto");
+            obj.parent().css("overflow-y", "auto");
+            obj.parent().css("font-size", "14px");
+
+            if (data.IsAlert == 2) {
+                // view_alert[3] = true;
+                alertAllChk();
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.InfraredId + '</td>'
+                    + '<td>' + data.InfraredName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.InfraredPoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="alert">异常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a>' + '</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl2)
+                    + '\')">查看</a>' + '</td>'
+                    + '</tr>');
+            } else {
+                obj.find("table tbody").append('<tr>'
+                    + '<td>' + hhmmss(data.Dt) + '</td>'
+                    //+ '<td>' + data.InfraredId + '</td>'
+                    + '<td>' + data.InfraredName + '</td>'
+                    + '<td><a href="#" onclick="jump(\'' + data.PointId + '\')">' + data.InfraredPoint + '</a></td>'
+                    + '<td>' + data.Val + '</td>'
+                    + '<td class="green">正常</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl)
+                    + '\')">查看</a>' + '</td>'
+                    + '<td><a href="#" onclick="CallShowImage(\''
+                    + data.InfraredName + '\',\'' + addhttp(data.ImgUrl2)
+                    + '\')">查看</a>' + '</td>'
+                    + '</tr>');
+            }
+
+            //obj.parent().scrollTop(obj.height());
+            obj.find("table tbody").animate({
+                scrollTop: obj.find("table tbody tr").length * 40
+            }, 200);
+        }
+    }
+}
+function Init() {
+    
+
+    // 中间仪表
+    $(".topic_startpolling").html('<p id="jw1"><canvas style="display:inline-block;width: 90px" id="jw1c"></canvas></p>' +
+        ' ' +
+        '<p id="hw1"><canvas style="display:inline-block;width: 90px" id="hw1c"></canvas></p>' +
+        ' ' +
+        ' ');
+
+    $("#jw1c").dashboard(0, {
+        "text": "激光甲烷",
+        "scoreSuffix": "%",
+        "angle": 45
+    });
+    
+    $("#hw1c").dashboard(0, {
+        "text": "红外双视",
+        "scoreSuffix": "%",
+        "angle": 45
+    });    
+    
+}
+
+function CallShowWindow(name, arg) {
+    // console.log("showWindow:" + name + ":" + arg);
+    //这里写js代码
+     
+
+    var win = '<div id="w1" class="window"><div><a href="#" onclick="CloseObj(this)">X</a><h4>' + name
+        + '</h4></div><iframe src="' + baseurl +  arg + '" frameborder="0"></iframe></div>';
+    $("#windows").append(win);
+    $("#windows").show();
+}
+function CloseObj(obj) {
+    $(obj).parent().parent().remove();
+
+    if ($(".window").length == 0) {
+        $("#windows").hide();
+    }
+}
+
+
+var scalesize = 1300;
+
+$('#canvas2').on('mousewheel DOMMouseScroll', onMouseScroll);
+function onMouseScroll(e){
+    
+    e.preventDefault();
+    var wheel = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+    var delta = Math.max(-1, Math.min(1, wheel) );
+    if(delta<0){//向下滚动
+        // console.log('向下滚动');
+        
+        scalesize-=10;
+        document.querySelector('#canvas').style.width = scalesize +'px';
+        document.querySelector('#canvas2').style.width = scalesize +'px';
+
+    }else{//向上滚动
+        // console.log('向上滚动');
+        scalesize+=10;
+        document.querySelector('#canvas').style.width = scalesize +'px';
+        document.querySelector('#canvas2').style.width = scalesize +'px';
+    }    
+}
+
+
+var p = false;
+//鼠标按下处在页面中的水平偏移
+var dx = 0;
+//鼠标按下处在页面中的垂直偏移
+var dy = 0;
+//div在页面中的水平偏移
+var sx = 0;
+//div在页面中的垂直偏移
+var sy = 0;
+$('#canvas2').bind('mousedown',mousedown);
+function mousedown(){
+    var event = event || window.event;
+    var scrollLeft = document.documentElement.scrollLeft;
+    var scrollTop = document.documentElement.scrollTop;
+    var pageX = event.pageX || event.clientX + scrollLeft;
+    var pageY = event.pageY || event.clientY + scrollTop;
+    dx = pageX;
+    dy = pageY;
+    sx = $('#canvas')[0].offsetLeft;
+    sy = $('#canvas')[0].offsetTop;
+　　$(document).bind('mousemove',function(event){
+　　var event = event || window.event;
+    var scrollLeft = document.documentElement.scrollLeft;
+    var scrollTop = document.documentElement.scrollTop;
+    var pageX = event.pageX || event.clientX + scrollLeft;
+    var pageY = event.pageY || event.clientY + scrollTop;
+    $('#canvas')[0].style.left = pageX - (dx - sx) + 'px';
+    $('#canvas')[0].style.top = pageY - (dy - sy) + 'px';
+    $('#canvas2')[0].style.left = pageX - (dx - sx) + 'px';
+    $('#canvas2')[0].style.top = pageY - (dy - sy) + 'px';
+　　});
+　　$(document).bind('mouseup',function(event){
+　　　　$(document).unbind('mousemove');
+　  });
+}
+/* 开始巡检 */
+function MqttStartPolling(val) {
+    publish("/StartPolling", "{\"Type\":\"" + val + "\"}");
+}
+function publish(topic, msg) {
+    console.log(topic);
+    console.log(msg);
+   var message = new Paho.MQTT.Message(msg);
+   message.destinationName = topic;
+    client.send(message)
+    
+}
+/* socket */
+function wsConnect() {
+    client = new Paho.MQTT.Client(wsurl, 9988,'/mqtt',`${Math.floor(Math.random()*(999999))}`);
+    // // client = new Paho.Client('192.168.0.14',8083,'/mqtt',`${Math.floor(Math.random()*(999999))}`)
+    client.connect({onSuccess:onConnect,onFailure(e){console.log(e)}});//连接服务器并注册连接成功处理事件
+    function onConnect() {
+        // console.log("onConnected");
+        client.subscribe("Infrared91");//订阅主题
+        client.subscribe("Methane91");//订阅主题
+        // client.subscribe("testtopic");//订阅主题
+
+    }
+    client.onMessageArrived = onMessageArrived;
+    function onMessageArrived(message) {
+        // console.log(message)
+        console.log("收到消息:"+message.payloadString);
+        // console.log( typeof message.payloadString);
+        // console.log(JSON.parse(message.payloadString))
+        var domain = message.destinationName
+        var msg = message.payloadString;
+        // window.a = msg
+        var topics = $(".topic_" + domain.toLowerCase());
+
+        console.log($(topics))
+        var pars = JSON.parse(msg)
+        window.p = pars
+        // 红外
+        if(domain =='Infrared91'){
+            // console.log(1)
+            if(timer){
+                clearTimeout(timer)
+            }
+            if(pars.Axis3D){
+                timer = setInterval(function(){
+                    clearcanvas2()
+                    setTimeout(function(){
+                        $.boxgeom(JSON.parse(pars.Axis3D)[0]);
+                    },250)
+                },500)
+
+            }
+            Infrared($(topics), pars);
+            
+            
+
+            
+
+        }
+        // 甲烷
+        if(domain =='Methane91'){
+            // console.log(2)
+            if(timer2){
+                clearTimeout(timer2)
+            }
+            if(pars.Axis3D){
+                timer2 = setInterval(function(){
+                    clearcanvas()
+                    setTimeout(function(){
+                        $.linegeom(JSON.parse(pars.Axis3D)[0]);
+                    },250)
+                },500)
+                
+            }
+            Methane($(topics), pars);
+        }
+        
+
+    }
+    client.onConnectionLost=function(err){
+        // console.log('loseconnect');
+        // console.log(err)
+        client.connect({onSuccess:onConnect,onFailure(e){console.log(e)}})
+    }
+    return
+
+}
+wsConnect();
+alertAllChk();
+setInterval("alertChk()", 100);
+function alertChk() {
+    //$(".alertbox img").css("opacity", 1);
+    if (alertnum > 0) {
+        if ($(".alertbox img").css("opacity") != 1) {
+            $(".alertbox img").css("opacity", 1);
+        } else {
+            $(".alertbox img").css("opacity", 0.5);
+        }
+    }
+}
+function proc(id, type) {
+    $("#remark").attr("src", "Remark.html?id=" + id + "&type=" + type);
+    $("#alertpost").show();
+}
+function closeproc() {
+    $("#alertpost").hide();
+}    
+function hhmmss(date) {
+    if (date.length == 18) {
+        return date.substr(10);
+    } else if (date.length == 19) {
+        return date.substr(11);
+    } else if (date.length == 24) {
+        return date;
+    }
+    return date;
+}
+
+
+
+  
+</script>

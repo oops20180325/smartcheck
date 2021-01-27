@@ -1,0 +1,364 @@
+/**
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video,
+input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font-weight: normal;
+  vertical-align: baseline;
+  // font-family:"Microsoft YaHei";
+}
+.el-button--mini, .el-button--small {
+  font-size: 14px;
+}
+.el-menu{
+  border-right: 0px;
+  .el-submenu{
+    min-width: 200px;
+  }
+}
+.el-menu--collapse.el-menu .el-submenu{
+  min-width: 60px;
+}
+.el-submenu,.is-active .el-submenu__title i{
+  color: rgb(255, 208, 75)!important;
+}
+.el-submenu,.is-active .el-submenu__title span{
+  color: rgb(255, 208, 75)!important;
+}
+.el-form-item{
+  margin-bottom: 10px;
+}
+/* element */
+.el-table::before{
+  height: 0;
+}
+.el-pagination{
+  margin-top: 8px;
+  text-align: right;
+}
+.el-form-item__label{
+  color: #fff;
+}
+.el-table .cell{
+  color: #fff;
+}
+// modal背景
+.el-dialog__header,.el-dialog__body,.el-dialog__footer{
+  background-color: darkslategray;
+  color: #fff;
+}
+.el-dialog__title,.el-dialog__headerbtn .el-dialog__close{
+  color: #fff;
+}
+// loading
+.el-loading-mask{
+  // background-color: #fff;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+  background-color: #f5f7fa52;
+}
+// 表格背景
+.el-table th,.el-table tr,.el-table__body-wrapper,.el-table,.el-table__expanded-cell{
+  background-color: transparent;
+}
+.tHead{
+  border:1px solid #ccc;
+  // border-radius:5px;
+  padding: 10px 30px;
+  .tit{
+    font-size:20px;
+    // font-weight:700;
+    color:#fff;
+  }
+}
+.tBody{
+  // border:1px solid #ccc;
+  // border-radius:5px;
+  // margin-left: 0px!important;
+  // margin-right: 0px!important;
+  // margin-top: 20px;
+  // padding:10px;
+}
+.tHead,.tBody {
+  // box-shadow: 4px 4px 8px #888888; 
+}
+.tHead.el-row {
+  min-height: 62px;
+  margin-left: 0!important;
+  margin-right: 0!important;
+}
+.el-submenu__title i,.el-tooltip i{
+  line-height: 56px;
+}
+
+.el-submenu__icon-arrow.el-icon-arrow-down{
+  line-height: 1;
+}
+.el-button {
+  padding: 9px 15px;
+  min-width: 5rem;
+  background-image: url('../../assets//ubtn.png');
+  background-size: 100% 100%;
+  color: #fff;
+  :hover{
+    color: #fff;
+    background-color: transparent;
+  }
+  span {
+    // font-weight: bold;
+    // font-family: "Microsoft YaHei";
+  }
+}
+.el-button:focus, .el-button:hover{
+  background-image: url('../../assets//ubtnh.png');
+  background-size: 100% 100%;
+  color: #fff;
+  background-color: transparent;
+}
+.el-button--primary,.el-button--danger,.el-button{
+  background-color: transparent;
+  border: none;
+}
+.el-button.is-plain:focus, .el-button.is-plain:hover{
+  background-color: transparent;
+  background-image: url(/img/ubtnh.47702ea6.png);
+  background-size: 100% 100%;
+  color: #fff;;
+}
+.el-button--primary:focus,.el-button--primary:hover,
+.el-button--danger:focus,.el-button--danger:hover{
+  background-color: transparent;
+  border: none;
+}
+.el-table__header{
+//  border-bottom: 1px solid #ccc;
+}
+.el-table thead {
+    // color: #444;
+    // font-weight: 500;
+    // font-size: 20px;
+}
+tbody{
+  // font-size: 18px;
+}
+.searchr{
+  text-align: right;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* custom */
+a {
+  color: #7e8c8d;
+  text-decoration: none;
+  -webkit-backface-visibility: hidden;
+}
+
+li {
+  list-style: none;
+}
+
+// ::-webkit-scrollbar {
+//   width: 4px;
+//   height: 10px;
+// }
+
+// ::-webkit-scrollbar-track-piece {
+//   background-color: rgba(0, 0, 0, 0.2);
+//   -webkit-border-radius: 6px;
+// }
+
+// ::-webkit-scrollbar-thumb:vertical {
+//   height: 5px;
+//   background-color: rgba(125, 125, 125, 0.7);
+//   -webkit-border-radius: 6px;
+// }
+
+// ::-webkit-scrollbar-thumb:horizontal {
+//   width: 5px;
+//   background-color: rgba(125, 125, 125, 0.7);
+//   -webkit-border-radius: 6px;
+// }
+
+html,
+body {
+  width: 100%;
+}
+
+body {
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.clearfix:after {
+  content: '';
+  clear: both;
+  display: block;
+}
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+}
+.inline-block {
+  display: inline-block;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.pl-2 {
+  padding-left: 0.5rem;
+}
+.w-full{
+  width:100%!important;
+}
+.vdbase{
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom:0;
+  right:0;
+  z-index: 900;
+  background-color: rgba(89, 86, 86, 0.392);
+}
+.vdhid{
+  display: none;
+  
+}
+.vdshow{
+  display: inline-block;
+  
+}
+.vdvideo{
+  position: absolute;
+  transition: all 0.5s ease-in-out 0s;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  height: 30%;
+}
+.h0{
+  opacity: 0;
+  height: 30%;
+}
+.h4{
+  opacity: 1;
+  height: 40%;
+}

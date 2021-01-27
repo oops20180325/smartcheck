@@ -1,0 +1,60 @@
+// 基础变量
+$g_font_s: 16px;// 一般字体大小
+$g_vice_font_s1: 14px;// 副标题字体大小1
+$g_vice_font_s2: 12px;// 副标题字体大小2s
+$g_vice_font_c: #97a8be;// 副标题字体颜色
+$g_theme: red;// ElementUI全局背景颜色
+$g_padding_20: 20px;// 一般padding
+$g_margin_20:20px;// 一般margin
+$g_spacing: 20px;
+$g_vice_spacing: 10px;
+
+// 基础变量
+//主要颜色
+$g_theme: #409eff;
+$success_color: #42b983;
+$error_color: #f56c6c;
+$warning_color: #f28d00;
+
+//背景颜色
+$card_bg_color:#f2f7fb;
+$common_color:#f7f7f7;  //普通页面的模块分割
+$border_c:#e6eaf2; //分割标题栏底色，分割线
+$hover_color:#e1effa; //表格表单悬浮色
+
+//字体颜色
+$primary_font_c:#333;
+$primary_font_s:16px;
+$primary_spacing: 24px;
+
+$g_font_c:#606266;
+$g_font_s:14px;
+$g_spacing:22px;
+
+$g_vice_font_c1:#909399;
+$g_vice_font_c2:#c0c4cc;
+$g_vice_font_size:12px;
+$g_vice_spacing:18px;
+
+//边距
+$g_padding:16px;
+
+//菜单颜色
+$m_bg_c:#304156;
+$m_text_c:#bfcbd9;
+
+
+//标签
+$tag_active:#42b983;
+$tag_icon_active:#e5fff4;
+
+$tag_hover:#f2f7fb;
+$tag_icon_hover:#dcdfe5;
+$tag_border:#dcdfe5;
+$tag_bg_c: #fff;
+
+:export {
+  theme: $g_theme;
+  textColor: $m_text_c;
+  bgColor:$m_bg_c
+}

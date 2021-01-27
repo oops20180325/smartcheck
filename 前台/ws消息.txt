@@ -1,0 +1,10 @@
+3d
+{"InfraredId":5,"InfraredPoint":"右7777","InfraredName":"142EF1(泾阳站)","Schedule":"1.00","PointId":100,"Type":1,"Axis3D":"[{\"x\":621,\"y\":145}]"}
+
+Axis3D为三维坐标
+
+
+报警
+{"InfraredId":5,"InfraredName":"142EF1(泾阳站)","InfraredPoint":"左1","Val":"2.88","IsAlert":2,"LimitMax":"100","Dt":"2021-01-23 17:01:19","StartTime":"2021-01-23 17:01:19","ImgUrl":"/infraredimg/142EF1(泾阳站)/红外/20210123/170130.jpeg","ImgUrl2":"/infraredimg/142EF1(泾阳站)/可见光/20210123/170130.jpeg","Type":2,"PointId":97}
+
+IsAlert==2为报警==1位正常
