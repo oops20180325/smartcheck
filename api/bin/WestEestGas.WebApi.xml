@@ -1,0 +1,415 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WestEestGas.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:WestEestGas.WebApi.Controllers.AlertController.PieCount(WestEestGas.Model.Request.AlertQuery)">
+            <summary>
+            饼状图报警统计
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.AlertController.LineCount(WestEestGas.Model.Request.AlertQuery)">
+            <summary>
+            折线图报警统计
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.AlertController.NoDispose">
+            <summary>
+            未处理报警
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.AlertController.ToDispose(WestEestGas.Model.Request.AlertUp)">
+            <summary>
+            处理报警
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CheckCameraController.GetAll(WestEestGas.Model.Request.CheckCameraQuery)">
+            <summary>
+            获取巡检顺序
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CheckCameraController.Add(WestEestGas.Model.Entity.CheckCamera)">
+            <summary>
+            添加巡检顺序信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CheckCameraController.GetOne(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            获取一个巡检信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CheckCameraController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除巡检顺序信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CheckCameraController.Update(WestEestGas.Model.Entity.CheckCamera)">
+            <summary>
+            更新摄像头信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.DeviceController.GetEntityFromDataTable``1(System.Data.DataTable)">
+            <summary>
+            将DataTable转为实体对象
+            </summary>
+            <typeparam name="T">目标类型</typeparam>
+            <param name="sourceDT">原DT</param>
+            <returns>转换后的实体列表</returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.FireaLertController.GetAll(WestEestGas.Model.Request.FireaLertQuery)">
+             <summary>
+            变频间光报警信息
+             </summary>
+             <param name="request"></param>
+             <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.FireaLertController.Download(WestEestGas.Model.Request.DownQuery)">
+             <summary>
+            变频间记录下载
+             </summary>
+             <param name="request"></param>
+             <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredController.GetAll(WestEestGas.Model.Request.BaseQuery)">
+            <summary>
+            获取所有红外双视信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredController.Add(WestEestGas.Model.Entity.Infrared)">
+            <summary>
+            添加红外双视信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredController.GetOne(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            获取一个红外双视信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除红外双视信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredController.Update(WestEestGas.Model.Entity.Infrared)">
+            <summary>
+            更新摄像头信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredLogController.GetAll(WestEestGas.Model.Request.InfrareLogQuery)">
+            <summary>
+            红外双视巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.InfraredLogController.Download(WestEestGas.Model.Request.DownQuery)">
+            <summary>
+            红外双视巡检记录下载
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.KcrobotLogController.GetAll(WestEestGas.Model.Request.KcrobotLogQuery)">
+            <summary>
+            获取所有防爆机器人巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.KcrobotLogController.Download(WestEestGas.Model.Request.DownQuery)">
+            <summary>
+            防爆机器人巡检记录下载
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.KcrobotPointController.GetAll(WestEestGas.Model.Request.KcrobotPointQuery)">
+            <summary>
+            获取所有防爆机器人点位
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneController.GetAll(WestEestGas.Model.Request.BaseQuery)">
+            <summary>
+            获取所有激光甲烷信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneController.Add(WestEestGas.Model.Entity.Methane)">
+            <summary>
+            添加激光甲烷信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除激光甲烷信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneController.Update(WestEestGas.Model.Entity.Methane)">
+            <summary>
+            更新激光甲烷信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneLogController.GetAll(WestEestGas.Model.Request.MethaneLogQuery)">
+            <summary>
+            获取所有激光甲烷巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.MethaneLogController.Download(WestEestGas.Model.Request.DownQuery)">
+            <summary>
+            激光甲烷巡检记录下载
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PointsController.GetAll(WestEestGas.Model.Request.PointsQuery)">
+            <summary>
+            获取所有点位信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PointsController.Add(WestEestGas.Model.Entity.Points)">
+            <summary>
+            添加点位信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PointsController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除点位信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PointsController.Update(WestEestGas.Model.Entity.Points)">
+            <summary>
+            更新点位信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PollingController.GetAll(WestEestGas.Model.Request.PollingQuery)">
+            <summary>
+            巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PollingSetController.GetAll(WestEestGas.Model.Request.BaseQuery)">
+            <summary>
+            获取所有巡检设置信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PollingSetController.Add(WestEestGas.Model.Entity.PollingSet)">
+            <summary>
+            添加巡检设置信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PollingSetController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除巡检设置信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PollingSetController.Update(WestEestGas.Model.Entity.PollingSet)">
+            <summary>
+            更新巡检设置信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PowerRobotController.GetAll(WestEestGas.Model.Request.PowerRobotQuery)">
+            <summary>
+            获取所有电力机器人巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PowerRobotController.LastRecord(System.Int32)">
+            <summary>
+            获取所有电力机器人巡检记录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PowerRobotController.Download(WestEestGas.Model.Request.DownQuery)">
+            <summary>
+            电力机器人巡检记录下载
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PresetPointsController.GetAll(WestEestGas.Model.Request.PresetPointsQuery)">
+            <summary>
+            获取所有巡检预置位信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PresetPointsController.Add(WestEestGas.Model.Entity.PresetPoints)">
+            <summary>
+            添加巡检预置位信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PresetPointsController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除巡检预置位信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.PresetPointsController.Update(WestEestGas.Model.Entity.PresetPoints)">
+            <summary>
+            更新巡检预置位信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.RoleController.GetAll(WestEestGas.Model.Request.BaseQuery)">
+            <summary>
+            获取所有角色权限信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.RoleController.Add(WestEestGas.Model.Request.RoleAdd)">
+            <summary>
+            添加角色权限信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.RoleController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除角色权限信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.RoleController.Update(WestEestGas.Model.Request.RoleAdd)">
+            <summary>
+            更新角色权限信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.UserController.GetAll(WestEestGas.Model.Request.UserQuery)">
+            <summary>
+            获取所有用户信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.UserController.Add(WestEestGas.Model.Entity.User)">
+            <summary>
+            添加用户信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.UserController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除用户信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.UserController.Update(WestEestGas.Model.Entity.User)">
+            <summary>
+            更新用户信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.UserController.Login(WestEestGas.Model.Request.LoginReq)">
+            <summary>
+            用户登录
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CameraController.GetAll(WestEestGas.Model.Request.CameraQuery)">
+            <summary>
+            获取所有摄像头信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CameraController.Add(WestEestGas.Model.Entity.Camera)">
+            <summary>
+            添加摄像头信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CameraController.GetOne(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            获取一个摄像头信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CameraController.Delete(WestEestGas.Model.Request.QueryByID)">
+            <summary>
+            删除摄像头信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WestEestGas.WebApi.Controllers.CameraController.Update(WestEestGas.Model.Entity.Camera)">
+            <summary>
+            更新摄像头信息
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
